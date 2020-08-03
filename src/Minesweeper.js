@@ -35,6 +35,7 @@ class Minesweeper extends Component {
   };
 
   handleTileClick = (e) => {
+    e.persist();
     let newClickedPosition =
       e.target.getAttribute("row") + "-" + e.target.getAttribute("column");
     const newClicked = [...this.state.clicked, newClickedPosition];
@@ -42,7 +43,7 @@ class Minesweeper extends Component {
       clicked: newClicked,
     });
     if (this.state.firstClick) {
-      console.log("not first click");
+      this.checkForZero(e);
     } else {
       this.handleFirstClick(e, newClickedPosition);
     }
@@ -66,11 +67,13 @@ class Minesweeper extends Component {
         firstClick: true,
         bombs: bombs,
       },
-      this.calculateClues
+      () => {
+        this.calculateClues(e);
+      }
     );
   };
 
-  calculateClues = () => {
+  calculateClues = (e) => {
     const tiles = [];
     for (let i = 1; i <= this.props.rows; i++) {
       for (let j = 1; j <= this.props.columns; j++) {
@@ -116,13 +119,42 @@ class Minesweeper extends Component {
           temp = temp + 1;
         }
       }
-      calculatedClues.push(temp);
+      calculatedClues.push({ [tiles[i].join("-")]: temp });
     }
-    this.setState({
-      calculatedClues: calculatedClues,
-    });
-  };
 
+    this.setState(
+      {
+        calculatedClues: calculatedClues,
+      },
+      () => {
+        this.checkForZero(e);
+      }
+    );
+  };
+  checkForZero = (e) => {
+    if (
+      this.state.calculatedClues[e.target.getAttribute("index")][
+        `${e.target.getAttribute("row")}-${e.target.getAttribute("column")}`
+      ] === 0
+    ) {
+      const newClicked = [];
+      let row = parseInt(e.target.getAttribute("row"));
+      let col = parseInt(e.target.getAttribute("column"));
+      newClicked.push(`${row - 1}-${col - 1}`);
+      newClicked.push(`${row - 1}-${col}`);
+      newClicked.push(`${row - 1}-${col + 1}`);
+      newClicked.push(`${row}-${col - 1}`);
+      newClicked.push(`${row}-${col + 1}`);
+      newClicked.push(`${row + 1}-${col - 1}`);
+      newClicked.push(`${row + 1}-${col}`);
+      newClicked.push(`${row + 1}-${col + 1}`);
+      this.setState((curState) => {
+        return {
+          clicked: [...curState.clicked, ...newClicked],
+        };
+      });
+    }
+  };
   render = () => {
     const tiles = [];
     for (let i = 1; i <= this.props.rows; i++) {
@@ -139,13 +171,15 @@ class Minesweeper extends Component {
               row={tile[0]}
               column={tile[1]}
               className="Minesweeper-tile"
+              index={index}
               onClick={this.handleTileClick}
               style={{
                 backgroundColor: "cyan",
               }}
             >
-              {this.state.clicked.includes(tile.join("-"))
-                ? this.state.calculatedClues[index]
+              {this.state.clicked.includes(tile.join("-")) &&
+              this.state.calculatedClues[index]
+                ? this.state.calculatedClues[index][tile.join("-")]
                 : ""}
             </div>
           );
