@@ -193,21 +193,69 @@ class Minesweeper extends Component {
   };
   clickNeighbours = (row, col) => {
     const newClicked = [...this.state.clicked];
-    if (!newClicked.includes(`${row - 1}-${col - 1}`))
+    if (
+      !newClicked.includes(`${row - 1}-${col - 1}`) &&
+      row - 1 > 0 &&
+      row - 1 <= this.props.rows &&
+      col - 1 > 0 &&
+      col - 1 <= this.props.columns
+    )
       newClicked.push(`${row - 1}-${col - 1}`);
-    if (!newClicked.includes(`${row - 1}-${col}`))
+    if (
+      !newClicked.includes(`${row - 1}-${col}`) &&
+      row - 1 > 0 &&
+      row - 1 <= this.props.rows &&
+      col > 0 &&
+      col <= this.props.columns
+    )
       newClicked.push(`${row - 1}-${col}`);
-    if (!newClicked.includes(`${row - 1}-${col + 1}`))
+    if (
+      !newClicked.includes(`${row - 1}-${col + 1}`) &&
+      row - 1 > 0 &&
+      row - 1 <= this.props.rows &&
+      col + 1 > 0 &&
+      col + 1 <= this.props.columns
+    )
       newClicked.push(`${row - 1}-${col + 1}`);
-    if (!newClicked.includes(`${row}-${col - 1}`))
+    if (
+      !newClicked.includes(`${row}-${col - 1}`) &&
+      row > 0 &&
+      row <= this.props.rows &&
+      col - 1 > 0 &&
+      col - 1 <= this.props.columns
+    )
       newClicked.push(`${row}-${col - 1}`);
-    if (!newClicked.includes(`${row}-${col + 1}`))
+    if (
+      !newClicked.includes(`${row}-${col + 1}`) &&
+      row > 0 &&
+      row <= this.props.rows &&
+      col + 1 > 0 &&
+      col + 1 <= this.props.columns
+    )
       newClicked.push(`${row}-${col + 1}`);
-    if (!newClicked.includes(`${row + 1}-${col - 1}`))
+    if (
+      !newClicked.includes(`${row + 1}-${col - 1}`) &&
+      row + 1 > 0 &&
+      row + 1 <= this.props.rows &&
+      col - 1 > 0 &&
+      col - 1 <= this.props.columns
+    )
       newClicked.push(`${row + 1}-${col - 1}`);
-    if (!newClicked.includes(`${row + 1}-${col}`))
+    if (
+      !newClicked.includes(`${row + 1}-${col}`) &&
+      row + 1 > 0 &&
+      row + 1 <= this.props.rows &&
+      col > 0 &&
+      col <= this.props.columns
+    )
       newClicked.push(`${row + 1}-${col}`);
-    if (!newClicked.includes(`${row + 1}-${col + 1}`))
+    if (
+      !newClicked.includes(`${row + 1}-${col + 1}`) &&
+      row + 1 > 0 &&
+      row + 1 <= this.props.rows &&
+      col + 1 > 0 &&
+      col + 1 <= this.props.columns
+    )
       newClicked.push(`${row + 1}-${col + 1}`);
     if (this.state.clicked.length !== newClicked.length) {
       this.setState(() => {
