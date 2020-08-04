@@ -11,6 +11,7 @@ class Minesweeper extends Component {
       calculatedClues: [],
       rightClick: [],
       secondRightClick: [],
+      lose: false,
     };
   }
 
@@ -28,6 +29,7 @@ class Minesweeper extends Component {
         calculatedClues: [],
         rightClick: [],
         secondRightClick: [],
+        lose: false,
       });
     }
     this.state.clicked.forEach((tile) => {
@@ -37,7 +39,7 @@ class Minesweeper extends Component {
 
   updateGrid = () => {
     document.querySelector(
-      ".Minesweeper"
+      ".Minesweeper-tilesContainer"
     ).style.gridTemplateColumns = `repeat(${this.props.columns},1fr)`;
   };
 
@@ -59,7 +61,19 @@ class Minesweeper extends Component {
         },
         () => {
           if (this.state.firstClickDone) {
-            this.checkForZero(e);
+            if (this.state.bombs.includes(newClickedPosition)) {
+              this.setState({
+                lose: true,
+                clicked: this.state.calculatedClues.map((ele) => {
+                  return ele.position;
+                }),
+                rightClick: [],
+                secondRightClick: [],
+              });
+            } else if (false) {
+            } else {
+              this.checkForZero(e);
+            }
           } else {
             this.handleFirstClick(e, newClickedPosition);
           }
@@ -252,6 +266,17 @@ class Minesweeper extends Component {
       });
     }
   };
+  handleRetry = () => {
+    this.setState({
+      firstClickDone: false,
+      bombs: [],
+      clicked: [],
+      calculatedClues: [],
+      rightClick: [],
+      secondRightClick: [],
+      lose: false,
+    });
+  };
   render = () => {
     const tiles = [];
     for (let i = 1; i <= this.props.rows; i++) {
@@ -261,26 +286,40 @@ class Minesweeper extends Component {
     }
     return (
       <div className="Minesweeper">
-        {tiles.map((tile, index) => {
-          return (
-            <button
-              key={tile.join("-")}
-              row={tile[0]}
-              column={tile[1]}
-              className="Minesweeper-tile"
-              index={index}
-              onClick={this.handleTileClick}
-              onContextMenu={this.handleRightClick}
-            >
-              {this.state.clicked.includes(tile.join("-")) &&
-              this.state.calculatedClues[index]
-                ? this.state.calculatedClues[index].clue
-                : ""}
-              {this.state.rightClick.includes(tile.join("-")) ? "Flag" : ""}
-              {this.state.secondRightClick.includes(tile.join("-")) ? "?" : ""}
-            </button>
-          );
-        })}
+        <div className="Minesweeper-tilesContainer">
+          {tiles.map((tile, index) => {
+            return (
+              <button
+                key={tile.join("-")}
+                row={tile[0]}
+                column={tile[1]}
+                className="Minesweeper-tile"
+                index={index}
+                onClick={this.handleTileClick}
+                onContextMenu={this.handleRightClick}
+              >
+                {this.state.clicked.includes(tile.join("-")) &&
+                this.state.calculatedClues[index]
+                  ? this.state.calculatedClues[index].clue
+                  : ""}
+                {this.state.rightClick.includes(tile.join("-")) ? "Flag" : ""}
+                {this.state.secondRightClick.includes(tile.join("-"))
+                  ? "?"
+                  : ""}
+              </button>
+            );
+          })}
+        </div>
+        <div>
+          {this.state.lose === false
+            ? `${
+                parseInt(this.props.bombs) - this.state.rightClick.length
+              } bombs
+     remaining`
+            : ""}
+          {this.state.lose ? "You Lose" : ""}
+          <button onClick={this.handleRetry}>retry</button>
+        </div>
       </div>
     );
   };
