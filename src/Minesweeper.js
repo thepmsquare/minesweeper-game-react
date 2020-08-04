@@ -5,7 +5,7 @@ class Minesweeper extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstClick: false,
+      firstClickDone: false,
       bombs: [],
       clicked: [],
       calculatedClues: [],
@@ -20,12 +20,15 @@ class Minesweeper extends Component {
     this.updateGrid();
     if (previousProps !== this.props) {
       this.setState({
-        firstClick: false,
+        firstClickDone: false,
         bombs: [],
         clicked: [],
         calculatedClues: [],
       });
     }
+    this.state.clicked.forEach((tile) => {
+      this.checkForZero(tile);
+    });
   };
 
   updateGrid = () => {
@@ -38,15 +41,22 @@ class Minesweeper extends Component {
     e.persist();
     let newClickedPosition =
       e.target.getAttribute("row") + "-" + e.target.getAttribute("column");
-    const newClicked = [...this.state.clicked, newClickedPosition];
-    this.setState({
-      clicked: newClicked,
-    });
-    if (this.state.firstClick) {
-      this.checkForZero(e);
-    } else {
-      this.handleFirstClick(e, newClickedPosition);
+    const newClicked = [...this.state.clicked];
+    if (!newClicked.includes(newClickedPosition)) {
+      newClicked.push(newClickedPosition);
     }
+    this.setState(
+      {
+        clicked: newClicked,
+      },
+      () => {
+        if (this.state.firstClickDone) {
+          this.checkForZero(e);
+        } else {
+          this.handleFirstClick(e, newClickedPosition);
+        }
+      }
+    );
   };
 
   handleFirstClick = (e, newClickedPosition) => {
@@ -64,7 +74,7 @@ class Minesweeper extends Component {
     }
     this.setState(
       {
-        firstClick: true,
+        firstClickDone: true,
         bombs: bombs,
       },
       () => {
@@ -119,7 +129,7 @@ class Minesweeper extends Component {
           temp = temp + 1;
         }
       }
-      calculatedClues.push({ [tiles[i].join("-")]: temp });
+      calculatedClues.push({ position: tiles[i].join("-"), clue: temp });
     }
 
     this.setState(
@@ -132,25 +142,54 @@ class Minesweeper extends Component {
     );
   };
   checkForZero = (e) => {
-    if (
-      this.state.calculatedClues[e.target.getAttribute("index")][
-        `${e.target.getAttribute("row")}-${e.target.getAttribute("column")}`
-      ] === 0
-    ) {
-      const newClicked = [];
-      let row = parseInt(e.target.getAttribute("row"));
-      let col = parseInt(e.target.getAttribute("column"));
+    if (typeof e === "object") {
+      if (
+        this.state.calculatedClues[e.target.getAttribute("index")].clue === 0
+      ) {
+        let row = parseInt(e.target.getAttribute("row"));
+        let col = parseInt(e.target.getAttribute("column"));
+        this.clickNeighbours(row, col);
+      }
+    } else if (typeof e === "string") {
+      if (
+        this.state.calculatedClues.find((ele) => {
+          return ele.position === e;
+        })
+      ) {
+        if (
+          this.state.calculatedClues.find((ele) => {
+            return ele.position === e;
+          }).clue === 0
+        ) {
+          let row = parseInt(e.split("-")[0]);
+          let col = parseInt(e.split("-")[1]);
+          this.clickNeighbours(row, col);
+        }
+      }
+    }
+  };
+  clickNeighbours = (row, col) => {
+    const newClicked = [...this.state.clicked];
+    if (!newClicked.includes(`${row - 1}-${col - 1}`))
       newClicked.push(`${row - 1}-${col - 1}`);
+    if (!newClicked.includes(`${row - 1}-${col}`))
       newClicked.push(`${row - 1}-${col}`);
+    if (!newClicked.includes(`${row - 1}-${col + 1}`))
       newClicked.push(`${row - 1}-${col + 1}`);
+    if (!newClicked.includes(`${row}-${col - 1}`))
       newClicked.push(`${row}-${col - 1}`);
+    if (!newClicked.includes(`${row}-${col + 1}`))
       newClicked.push(`${row}-${col + 1}`);
+    if (!newClicked.includes(`${row + 1}-${col - 1}`))
       newClicked.push(`${row + 1}-${col - 1}`);
+    if (!newClicked.includes(`${row + 1}-${col}`))
       newClicked.push(`${row + 1}-${col}`);
+    if (!newClicked.includes(`${row + 1}-${col + 1}`))
       newClicked.push(`${row + 1}-${col + 1}`);
-      this.setState((curState) => {
+    if (this.state.clicked.length !== newClicked.length) {
+      this.setState(() => {
         return {
-          clicked: [...curState.clicked, ...newClicked],
+          clicked: newClicked,
         };
       });
     }
@@ -173,13 +212,10 @@ class Minesweeper extends Component {
               className="Minesweeper-tile"
               index={index}
               onClick={this.handleTileClick}
-              style={{
-                backgroundColor: "cyan",
-              }}
             >
               {this.state.clicked.includes(tile.join("-")) &&
               this.state.calculatedClues[index]
-                ? this.state.calculatedClues[index][tile.join("-")]
+                ? this.state.calculatedClues[index].clue
                 : ""}
             </div>
           );
