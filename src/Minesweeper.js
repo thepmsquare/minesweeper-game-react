@@ -9,6 +9,8 @@ class Minesweeper extends Component {
       bombs: [],
       clicked: [],
       calculatedClues: [],
+      rightClick: [],
+      secondRightClick: [],
     };
   }
 
@@ -24,6 +26,8 @@ class Minesweeper extends Component {
         bombs: [],
         clicked: [],
         calculatedClues: [],
+        rightClick: [],
+        secondRightClick: [],
       });
     }
     this.state.clicked.forEach((tile) => {
@@ -41,22 +45,27 @@ class Minesweeper extends Component {
     e.persist();
     let newClickedPosition =
       e.target.getAttribute("row") + "-" + e.target.getAttribute("column");
-    const newClicked = [...this.state.clicked];
-    if (!newClicked.includes(newClickedPosition)) {
-      newClicked.push(newClickedPosition);
-    }
-    this.setState(
-      {
-        clicked: newClicked,
-      },
-      () => {
-        if (this.state.firstClickDone) {
-          this.checkForZero(e);
-        } else {
-          this.handleFirstClick(e, newClickedPosition);
-        }
+    if (
+      !this.state.rightClick.includes(newClickedPosition) &&
+      !this.state.secondRightClick.includes(newClickedPosition)
+    ) {
+      const newClicked = [...this.state.clicked];
+      if (!newClicked.includes(newClickedPosition)) {
+        newClicked.push(newClickedPosition);
       }
-    );
+      this.setState(
+        {
+          clicked: newClicked,
+        },
+        () => {
+          if (this.state.firstClickDone) {
+            this.checkForZero(e);
+          } else {
+            this.handleFirstClick(e, newClickedPosition);
+          }
+        }
+      );
+    }
   };
 
   handleFirstClick = (e, newClickedPosition) => {
@@ -194,6 +203,55 @@ class Minesweeper extends Component {
       });
     }
   };
+  handleRightClick = (e) => {
+    e.preventDefault();
+    let row = parseInt(e.target.getAttribute("row"));
+    let col = parseInt(e.target.getAttribute("column"));
+    let position = `${row}-${col}`;
+    const newRightClicked = [...this.state.rightClick];
+    const newSecondRightClicked = [...this.state.secondRightClick];
+
+    if (
+      !this.state.clicked.includes(position) &&
+      !newRightClicked.includes(position) &&
+      !newSecondRightClicked.includes(position)
+    ) {
+      newRightClicked.push(position);
+      this.setState({
+        rightClick: newRightClicked,
+      });
+    } else if (
+      !this.state.clicked.includes(position) &&
+      newRightClicked.includes(position) &&
+      !newSecondRightClicked.includes(position)
+    ) {
+      newRightClicked.splice(
+        newRightClicked.findIndex((ele) => {
+          return ele === position;
+        }),
+        1
+      );
+      newSecondRightClicked.push(position);
+      this.setState({
+        rightClick: newRightClicked,
+        secondRightClick: newSecondRightClicked,
+      });
+    } else if (
+      !this.state.clicked.includes(position) &&
+      !newRightClicked.includes(position) &&
+      newSecondRightClicked.includes(position)
+    ) {
+      newSecondRightClicked.splice(
+        newSecondRightClicked.findIndex((ele) => {
+          return ele === position;
+        }),
+        1
+      );
+      this.setState({
+        secondRightClick: newSecondRightClicked,
+      });
+    }
+  };
   render = () => {
     const tiles = [];
     for (let i = 1; i <= this.props.rows; i++) {
@@ -205,19 +263,22 @@ class Minesweeper extends Component {
       <div className="Minesweeper">
         {tiles.map((tile, index) => {
           return (
-            <div
+            <button
               key={tile.join("-")}
               row={tile[0]}
               column={tile[1]}
               className="Minesweeper-tile"
               index={index}
               onClick={this.handleTileClick}
+              onContextMenu={this.handleRightClick}
             >
               {this.state.clicked.includes(tile.join("-")) &&
               this.state.calculatedClues[index]
                 ? this.state.calculatedClues[index].clue
                 : ""}
-            </div>
+              {this.state.rightClick.includes(tile.join("-")) ? "Flag" : ""}
+              {this.state.secondRightClick.includes(tile.join("-")) ? "?" : ""}
+            </button>
           );
         })}
       </div>
