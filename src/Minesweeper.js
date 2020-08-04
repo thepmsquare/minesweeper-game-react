@@ -12,6 +12,7 @@ class Minesweeper extends Component {
       rightClick: [],
       secondRightClick: [],
       lose: false,
+      win: false,
     };
   }
 
@@ -30,6 +31,7 @@ class Minesweeper extends Component {
         rightClick: [],
         secondRightClick: [],
         lose: false,
+        win: false,
       });
     }
     this.state.clicked.forEach((tile) => {
@@ -61,6 +63,14 @@ class Minesweeper extends Component {
         },
         () => {
           if (this.state.firstClickDone) {
+            const target = this.state.calculatedClues
+              .map((ele) => {
+                return ele.position;
+              })
+              .filter((x) => !this.state.bombs.includes(x))
+              .sort();
+            const compareToTarget = this.state.clicked.sort();
+
             if (this.state.bombs.includes(newClickedPosition)) {
               this.setState({
                 lose: true,
@@ -70,7 +80,10 @@ class Minesweeper extends Component {
                 rightClick: [],
                 secondRightClick: [],
               });
-            } else if (false) {
+            } else if (
+              JSON.stringify(target) === JSON.stringify(compareToTarget)
+            ) {
+              this.setState({ win: true });
             } else {
               this.checkForZero(e);
             }
@@ -323,6 +336,7 @@ class Minesweeper extends Component {
       rightClick: [],
       secondRightClick: [],
       lose: false,
+      win: false,
     });
   };
   render = () => {
@@ -332,6 +346,7 @@ class Minesweeper extends Component {
         tiles.push([i, j]);
       }
     }
+
     return (
       <div className="Minesweeper">
         <div className="Minesweeper-tilesContainer">
@@ -359,13 +374,14 @@ class Minesweeper extends Component {
           })}
         </div>
         <div>
-          {this.state.lose === false
+          {!this.state.lose && !this.state.win
             ? `${
                 parseInt(this.props.bombs) - this.state.rightClick.length
               } bombs
      remaining`
             : ""}
           {this.state.lose ? "You Lose" : ""}
+          {this.state.win ? "Win" : ""}
           <button onClick={this.handleRetry}>retry</button>
         </div>
       </div>
