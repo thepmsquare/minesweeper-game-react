@@ -12,3 +12,6 @@
   border: 0.1rem solid darkcyan;
   background-color: cyan;
 }
+.Minesweeper-tile.clicked {
+  background-color: white;
+}

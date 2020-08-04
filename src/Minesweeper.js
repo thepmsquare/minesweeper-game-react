@@ -356,7 +356,11 @@ class Minesweeper extends Component {
                 key={tile.join("-")}
                 row={tile[0]}
                 column={tile[1]}
-                className="Minesweeper-tile"
+                className={
+                  this.state.clicked.includes(tile.join("-"))
+                    ? "Minesweeper-tile clicked"
+                    : "Minesweeper-tile"
+                }
                 index={index}
                 onClick={this.handleTileClick}
                 onContextMenu={this.handleRightClick}
