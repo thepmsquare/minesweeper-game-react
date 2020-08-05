@@ -97,9 +97,32 @@ class Minesweeper extends Component {
 
   handleFirstClick = (e, newClickedPosition) => {
     let bombOptions = [];
+    // not optimal
+    let row = parseInt(e.target.getAttribute("row"));
+    let col = parseInt(e.target.getAttribute("column"));
+    let noBomb1 = `${row - 1}-${col - 1}`;
+    let noBomb2 = `${row - 1}-${col}`;
+    let noBomb3 = `${row - 1}-${col + 1}`;
+    let noBomb4 = `${row}-${col - 1}`;
+    let noBomb5 = `${row}-${col + 1}`;
+    let noBomb6 = `${row + 1}-${col - 1}`;
+    let noBomb7 = `${row + 1}-${col}`;
+    let noBomb8 = `${row + 1}-${col + 1}`;
+    console.log(col);
     for (let i = 1; i <= this.props.rows; i++) {
       for (let j = 1; j <= this.props.columns; j++) {
-        if (i + "-" + j !== newClickedPosition) bombOptions.push(i + "-" + j);
+        if (
+          i + "-" + j !== newClickedPosition &&
+          i + "-" + j !== noBomb1 &&
+          i + "-" + j !== noBomb2 &&
+          i + "-" + j !== noBomb3 &&
+          i + "-" + j !== noBomb4 &&
+          i + "-" + j !== noBomb5 &&
+          i + "-" + j !== noBomb6 &&
+          i + "-" + j !== noBomb7 &&
+          i + "-" + j !== noBomb8
+        )
+          bombOptions.push(i + "-" + j);
       }
     }
     const bombs = [];
