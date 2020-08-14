@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Minesweeper from "./Minesweeper";
-import { Menu } from "semantic-ui-react";
+
 import "./stylesheets/App.css";
 
 class App extends Component {
@@ -8,36 +8,13 @@ class App extends Component {
     super(props);
     this.state = { activeItem: "easy" };
   }
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name });
+
+  handleItemClick = (e, data) => {
+    this.setState({ activeItem: data.value });
+  };
   render = () => {
-    const { activeItem } = this.state;
     return (
       <div className="App">
-        <Menu widths="3">
-          <Menu.Item
-            name="easy"
-            active={activeItem === "easy"}
-            onClick={this.handleItemClick}
-          >
-            Easy
-          </Menu.Item>
-
-          <Menu.Item
-            name="medium"
-            active={activeItem === "medium"}
-            onClick={this.handleItemClick}
-          >
-            Medium
-          </Menu.Item>
-
-          <Menu.Item
-            name="expert"
-            active={activeItem === "expert"}
-            onClick={this.handleItemClick}
-          >
-            Expert
-          </Menu.Item>
-        </Menu>
         <Minesweeper
           rows={
             this.state.activeItem === "easy"
@@ -60,6 +37,7 @@ class App extends Component {
               ? 40
               : 99
           }
+          dropdownOnChange={this.handleItemClick}
         />
       </div>
     );

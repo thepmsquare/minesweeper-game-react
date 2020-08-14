@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import { Button, Icon } from "semantic-ui-react";
 import "./stylesheets/Minesweeper.css";
-
+import { Dropdown } from "semantic-ui-react";
 class Minesweeper extends Component {
   constructor(props) {
     super(props);
@@ -34,15 +35,20 @@ class Minesweeper extends Component {
         win: false,
       });
     }
-    this.state.clicked.forEach((tile) => {
-      this.checkForZero(tile);
-    });
+    if (previousProps === this.props) {
+      this.state.clicked.forEach((tile) => {
+        this.checkForZero(tile);
+      });
+    }
   };
 
   updateGrid = () => {
     document.querySelector(
       ".Minesweeper-tilesContainer"
-    ).style.gridTemplateColumns = `repeat(${this.props.columns},1fr)`;
+    ).style.gridTemplateColumns = `repeat(${this.props.columns},3vh)`;
+    document.querySelector(
+      ".Minesweeper-tilesContainer"
+    ).style.gridTemplateRows = `repeat(${this.props.rows},3vh)`;
   };
 
   handleTileClick = (e) => {
@@ -234,7 +240,9 @@ class Minesweeper extends Component {
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns
+      col - 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row - 1}-${col - 1}`) &&
+      !this.state.secondRightClick.includes(`${row - 1}-${col - 1}`)
     )
       newClicked.push(`${row - 1}-${col - 1}`);
     if (
@@ -242,7 +250,9 @@ class Minesweeper extends Component {
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col > 0 &&
-      col <= this.props.columns
+      col <= this.props.columns &&
+      !this.state.rightClick.includes(`${row - 1}-${col}`) &&
+      !this.state.secondRightClick.includes(`${row - 1}-${col}`)
     )
       newClicked.push(`${row - 1}-${col}`);
     if (
@@ -250,7 +260,9 @@ class Minesweeper extends Component {
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns
+      col + 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row - 1}-${col + 1}`) &&
+      !this.state.secondRightClick.includes(`${row - 1}-${col + 1}`)
     )
       newClicked.push(`${row - 1}-${col + 1}`);
     if (
@@ -258,7 +270,9 @@ class Minesweeper extends Component {
       row > 0 &&
       row <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns
+      col - 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row}-${col - 1}`) &&
+      !this.state.secondRightClick.includes(`${row}-${col - 1}`)
     )
       newClicked.push(`${row}-${col - 1}`);
     if (
@@ -266,7 +280,9 @@ class Minesweeper extends Component {
       row > 0 &&
       row <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns
+      col + 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row}-${col + 1}`) &&
+      !this.state.secondRightClick.includes(`${row}-${col + 1}`)
     )
       newClicked.push(`${row}-${col + 1}`);
     if (
@@ -274,7 +290,9 @@ class Minesweeper extends Component {
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns
+      col - 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row + 1}-${col - 1}`) &&
+      !this.state.secondRightClick.includes(`${row + 1}-${col - 1}`)
     )
       newClicked.push(`${row + 1}-${col - 1}`);
     if (
@@ -282,7 +300,9 @@ class Minesweeper extends Component {
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col > 0 &&
-      col <= this.props.columns
+      col <= this.props.columns &&
+      !this.state.rightClick.includes(`${row + 1}-${col}`) &&
+      !this.state.secondRightClick.includes(`${row + 1}-${col}`)
     )
       newClicked.push(`${row + 1}-${col}`);
     if (
@@ -290,7 +310,9 @@ class Minesweeper extends Component {
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns
+      col + 1 <= this.props.columns &&
+      !this.state.rightClick.includes(`${row + 1}-${col + 1}`) &&
+      !this.state.secondRightClick.includes(`${row + 1}-${col + 1}`)
     )
       newClicked.push(`${row + 1}-${col + 1}`);
     if (this.state.clicked.length !== newClicked.length) {
@@ -369,13 +391,46 @@ class Minesweeper extends Component {
         tiles.push([i, j]);
       }
     }
-
+    const difficultyOptions = [
+      {
+        key: "easy",
+        text: "Easy",
+        value: "easy",
+      },
+      {
+        key: "medium",
+        text: "Medium",
+        value: "medium",
+      },
+      {
+        key: "hard",
+        text: "Hard",
+        value: "hard",
+      },
+    ];
     return (
       <div className="Minesweeper">
+        <div className="Minesweeper-top">
+          {!this.state.lose && !this.state.win
+            ? parseInt(this.props.bombs) - this.state.rightClick.length
+            : ""}
+          {this.state.lose ? "You Lose" : ""}
+          {this.state.win ? "Win" : ""}
+          <Button onClick={this.handleRetry}>Retry</Button>
+          <Dropdown
+            placeholder="Difficulty"
+            selection
+            compact
+            options={difficultyOptions}
+            defaultValue="easy"
+            onChange={this.props.dropdownOnChange}
+          />
+        </div>
+
         <div className="Minesweeper-tilesContainer">
           {tiles.map((tile, index) => {
             return (
-              <button
+              <Button
                 key={tile.join("-")}
                 row={tile[0]}
                 column={tile[1]}
@@ -388,29 +443,38 @@ class Minesweeper extends Component {
                 onClick={this.handleTileClick}
                 onContextMenu={this.handleRightClick}
               >
+                {/* show clues */}
                 {this.state.clicked.includes(tile.join("-")) &&
-                this.state.calculatedClues[index]
+                this.state.calculatedClues[index] &&
+                !this.state.rightClick.includes(tile.join("-")) &&
+                !this.state.secondRightClick.includes(tile.join("-")) &&
+                this.state.calculatedClues[index].clue !== -1
                   ? this.state.calculatedClues[index].clue
                   : ""}
-                {this.state.rightClick.includes(tile.join("-")) ? "Flag" : ""}
-                {this.state.secondRightClick.includes(tile.join("-"))
-                  ? "?"
-                  : ""}
-              </button>
+                {/* show bombs */}
+                {this.state.bombs.includes(tile.join("-")) &&
+                this.state.clicked.includes(tile.join("-")) ? (
+                  <Icon color="red" name="bomb" />
+                ) : (
+                  ""
+                )}
+                {/* show flag */}
+                {this.state.rightClick.includes(tile.join("-")) ? (
+                  <Icon color="red" name="flag" />
+                ) : (
+                  ""
+                )}
+                {/* show qmark */}
+                {this.state.secondRightClick.includes(tile.join("-")) ? (
+                  <Icon name="question" />
+                ) : (
+                  ""
+                )}
+              </Button>
             );
           })}
         </div>
-        <div>
-          {!this.state.lose && !this.state.win
-            ? `${
-                parseInt(this.props.bombs) - this.state.rightClick.length
-              } bombs
-     remaining`
-            : ""}
-          {this.state.lose ? "You Lose" : ""}
-          {this.state.win ? "Win" : ""}
-          <button onClick={this.handleRetry}>retry</button>
-        </div>
+        <div></div>
       </div>
     );
   };

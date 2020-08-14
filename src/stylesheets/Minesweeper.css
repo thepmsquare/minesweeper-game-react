@@ -2,16 +2,19 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+.Minesweeper-top {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 0.2rem;
+  width: 100%;
 }
 .Minesweeper-tilesContainer {
   display: grid;
   flex-grow: 1;
 }
-.Minesweeper-tile {
-  border-radius: 0.5rem;
-  border: 0.1rem solid darkcyan;
-  background-color: cyan;
-}
-.Minesweeper-tile.clicked {
-  background-color: white;
+.Minesweeper-tilesContainer .ui.button {
+  font-size: 0.6rem;
 }
