@@ -97,7 +97,11 @@ class Minesweeper extends Component {
             } else if (
               JSON.stringify(target) === JSON.stringify(compareToTarget)
             ) {
-              this.setState({ win: true });
+              this.setState({
+                win: true,
+                rightClick: this.state.bombs,
+                secondRightClick: [],
+              });
             } else {
               this.checkForZero(e);
             }
@@ -429,50 +433,52 @@ class Minesweeper extends Component {
   };
   handleRightClick = (e) => {
     e.preventDefault();
-    let row = parseInt(e.target.getAttribute("row"));
-    let col = parseInt(e.target.getAttribute("column"));
-    let position = `${row}-${col}`;
-    const newRightClicked = [...this.state.rightClick];
-    const newSecondRightClicked = [...this.state.secondRightClick];
-    if (
-      !this.state.clicked.includes(position) &&
-      !newRightClicked.includes(position) &&
-      !newSecondRightClicked.includes(position)
-    ) {
-      newRightClicked.push(position);
-      this.setState({
-        rightClick: newRightClicked,
-      });
-    } else if (
-      !this.state.clicked.includes(position) &&
-      newRightClicked.includes(position) &&
-      !newSecondRightClicked.includes(position)
-    ) {
-      newRightClicked.splice(
-        newRightClicked.findIndex((ele) => {
-          return ele === position;
-        }),
-        1
-      );
-      newSecondRightClicked.push(position);
-      this.setState({
-        rightClick: newRightClicked,
-        secondRightClick: newSecondRightClicked,
-      });
-    } else if (
-      !this.state.clicked.includes(position) &&
-      !newRightClicked.includes(position) &&
-      newSecondRightClicked.includes(position)
-    ) {
-      newSecondRightClicked.splice(
-        newSecondRightClicked.findIndex((ele) => {
-          return ele === position;
-        }),
-        1
-      );
-      this.setState({
-        secondRightClick: newSecondRightClicked,
-      });
+    if (!this.state.win) {
+      let row = parseInt(e.target.getAttribute("row"));
+      let col = parseInt(e.target.getAttribute("column"));
+      let position = `${row}-${col}`;
+      const newRightClicked = [...this.state.rightClick];
+      const newSecondRightClicked = [...this.state.secondRightClick];
+      if (
+        !this.state.clicked.includes(position) &&
+        !newRightClicked.includes(position) &&
+        !newSecondRightClicked.includes(position)
+      ) {
+        newRightClicked.push(position);
+        this.setState({
+          rightClick: newRightClicked,
+        });
+      } else if (
+        !this.state.clicked.includes(position) &&
+        newRightClicked.includes(position) &&
+        !newSecondRightClicked.includes(position)
+      ) {
+        newRightClicked.splice(
+          newRightClicked.findIndex((ele) => {
+            return ele === position;
+          }),
+          1
+        );
+        newSecondRightClicked.push(position);
+        this.setState({
+          rightClick: newRightClicked,
+          secondRightClick: newSecondRightClicked,
+        });
+      } else if (
+        !this.state.clicked.includes(position) &&
+        !newRightClicked.includes(position) &&
+        newSecondRightClicked.includes(position)
+      ) {
+        newSecondRightClicked.splice(
+          newSecondRightClicked.findIndex((ele) => {
+            return ele === position;
+          }),
+          1
+        );
+        this.setState({
+          secondRightClick: newSecondRightClicked,
+        });
+      }
     }
   };
   handleRetry = () => {
