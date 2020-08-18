@@ -1,4 +1,4 @@
-# minesweeper-game-react (WIP)
+# minesweeper-game-react
 
 Minesweeper game made with ReactJS.
 
