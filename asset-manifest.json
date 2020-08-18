@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/minesweeper-game-react/static/css/main.94d23040.chunk.css",
+    "main.js": "/minesweeper-game-react/static/js/main.a6c64366.chunk.js",
+    "main.js.map": "/minesweeper-game-react/static/js/main.a6c64366.chunk.js.map",
+    "runtime-main.js": "/minesweeper-game-react/static/js/runtime-main.8f58ab42.js",
+    "runtime-main.js.map": "/minesweeper-game-react/static/js/runtime-main.8f58ab42.js.map",
+    "static/css/2.a3a84f15.chunk.css": "/minesweeper-game-react/static/css/2.a3a84f15.chunk.css",
+    "static/js/2.92be98d6.chunk.js": "/minesweeper-game-react/static/js/2.92be98d6.chunk.js",
+    "static/js/2.92be98d6.chunk.js.map": "/minesweeper-game-react/static/js/2.92be98d6.chunk.js.map",
+    "index.html": "/minesweeper-game-react/index.html",
+    "precache-manifest.206ef87628d31d2397fcca842b6137f6.js": "/minesweeper-game-react/precache-manifest.206ef87628d31d2397fcca842b6137f6.js",
+    "service-worker.js": "/minesweeper-game-react/service-worker.js",
+    "static/css/2.a3a84f15.chunk.css.map": "/minesweeper-game-react/static/css/2.a3a84f15.chunk.css.map",
+    "static/css/main.94d23040.chunk.css.map": "/minesweeper-game-react/static/css/main.94d23040.chunk.css.map",
+    "static/js/2.92be98d6.chunk.js.LICENSE.txt": "/minesweeper-game-react/static/js/2.92be98d6.chunk.js.LICENSE.txt",
+    "static/media/semantic.min.css": "/minesweeper-game-react/static/media/outline-icons.ef60a4f6.woff"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8f58ab42.js",
+    "static/css/2.a3a84f15.chunk.css",
+    "static/js/2.92be98d6.chunk.js",
+    "static/css/main.94d23040.chunk.css",
+    "static/js/main.a6c64366.chunk.js"
+  ]
+}
