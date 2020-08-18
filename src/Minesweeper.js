@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Button, Label } from "semantic-ui-react";
+import { Button, Dropdown, Message } from "semantic-ui-react";
 import "./stylesheets/Minesweeper.css";
-import { Dropdown } from "semantic-ui-react";
 
 class Minesweeper extends Component {
   constructor(props) {
@@ -15,6 +14,7 @@ class Minesweeper extends Component {
       secondRightClick: [],
       lose: false,
       win: false,
+      messageVisible: true,
     };
   }
   componentDidMount = () => {
@@ -42,13 +42,21 @@ class Minesweeper extends Component {
     }
   };
   updateGrid = () => {
-    // Max row count is 30, and 100/30 = 3.33.
+    let parentWidth = window
+      .getComputedStyle(document.querySelector(".Minesweeper-tilesContainer"))
+      .getPropertyValue("width")
+      .slice(0, -2);
+
     document.querySelector(
       ".Minesweeper-tilesContainer"
-    ).style.gridTemplateColumns = `repeat(${this.props.columns},3vh)`;
+    ).style.gridTemplateColumns = `repeat(${this.props.columns},${
+      parentWidth / this.props.columns
+    }px)`;
     document.querySelector(
       ".Minesweeper-tilesContainer"
-    ).style.gridTemplateRows = `repeat(${this.props.rows},3vh)`;
+    ).style.gridTemplateRows = `repeat(${this.props.rows},${
+      parentWidth / this.props.columns
+    }px)`;
   };
   handleTileClick = (e) => {
     // Value of e changes in other functions, if I dont do this.
@@ -479,7 +487,11 @@ class Minesweeper extends Component {
       win: false,
     });
   };
+  handleMessageDismiss = () => {
+    this.setState({ messageVisible: false });
+  };
   render = () => {
+    window.onresize = this.updateGrid;
     const tiles = [];
     for (let i = 1; i <= this.props.rows; i++) {
       for (let j = 1; j <= this.props.columns; j++) {
@@ -505,14 +517,26 @@ class Minesweeper extends Component {
     ];
     return (
       <div className="Minesweeper">
+        {this.state.messageVisible ? (
+          <Message
+            onDismiss={this.handleMessageDismiss}
+            header="Tip"
+            content="Long press / Right click to flag."
+          />
+        ) : (
+          ""
+        )}
+
         <div className="Minesweeper-top">
-          <Label>
+          <Button>
             {!this.state.lose && !this.state.win
-              ? parseInt(this.props.bombs) - this.state.rightClick.length
+              ? `${
+                  parseInt(this.props.bombs) - this.state.rightClick.length
+                } 💣`
               : ""}
             {this.state.lose ? "You Lose" : ""}
             {this.state.win ? "Win" : ""}
-          </Label>
+          </Button>
           <Button onClick={this.handleRetry}>Retry</Button>
           <Dropdown
             placeholder="Difficulty"
@@ -560,7 +584,6 @@ class Minesweeper extends Component {
             );
           })}
         </div>
-        <Label>Long press / Right click to flag.</Label>
       </div>
     );
   };
