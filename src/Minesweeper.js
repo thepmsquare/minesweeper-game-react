@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Icon, Label } from "semantic-ui-react";
+import { Button, Label } from "semantic-ui-react";
 import "./stylesheets/Minesweeper.css";
 import { Dropdown } from "semantic-ui-react";
 
@@ -34,6 +34,7 @@ class Minesweeper extends Component {
         win: false,
       });
     }
+    // To auto click all zeros.
     if (previousProps === this.props) {
       this.state.clicked.forEach((tile) => {
         this.checkForZero(tile);
@@ -41,6 +42,7 @@ class Minesweeper extends Component {
     }
   };
   updateGrid = () => {
+    // Max row count is 30, and 100/30 = 3.33.
     document.querySelector(
       ".Minesweeper-tilesContainer"
     ).style.gridTemplateColumns = `repeat(${this.props.columns},3vh)`;
@@ -49,6 +51,7 @@ class Minesweeper extends Component {
     ).style.gridTemplateRows = `repeat(${this.props.rows},3vh)`;
   };
   handleTileClick = (e) => {
+    // Value of e changes in other functions, if I dont do this.
     e.persist();
     let newClickedPosition =
       e.target.getAttribute("row") + "-" + e.target.getAttribute("column");
@@ -57,6 +60,7 @@ class Minesweeper extends Component {
       !this.state.secondRightClick.includes(newClickedPosition)
     ) {
       const newClicked = [...this.state.clicked];
+      // User may click same tile twice.
       if (!newClicked.includes(newClickedPosition)) {
         newClicked.push(newClickedPosition);
       }
@@ -73,7 +77,6 @@ class Minesweeper extends Component {
               .filter((x) => !this.state.bombs.includes(x))
               .sort();
             const compareToTarget = this.state.clicked.sort();
-
             if (this.state.bombs.includes(newClickedPosition)) {
               this.setState({
                 lose: true,
@@ -100,6 +103,7 @@ class Minesweeper extends Component {
   handleFirstClick = (e, newClickedPosition) => {
     let bombOptions = [];
     // not optimal
+    // Dont put bombs surrounding user clicked tile.
     let row = parseInt(e.target.getAttribute("row"));
     let col = parseInt(e.target.getAttribute("column"));
     let noBomb1 = `${row - 1}-${col - 1}`;
@@ -200,6 +204,7 @@ class Minesweeper extends Component {
     );
   };
   checkForZero = (e) => {
+    // I don't remember why I passed event as object instead of newClickedPosition string.
     if (typeof e === "object") {
       if (
         this.state.calculatedClues[e.target.getAttribute("index")].clue === 0
@@ -209,6 +214,7 @@ class Minesweeper extends Component {
         this.clickNeighbours(row, col);
       }
     } else if (typeof e === "string") {
+      // Breaks on first click, if I don't do this.
       if (
         this.state.calculatedClues.find((ele) => {
           return ele.position === e;
@@ -228,86 +234,183 @@ class Minesweeper extends Component {
   };
   clickNeighbours = (row, col) => {
     const newClicked = [...this.state.clicked];
+    // Don't click if already clicked or outside grid.
+    // Remove right clicks and double right clicks if present.
     if (
       !newClicked.includes(`${row - 1}-${col - 1}`) &&
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row - 1}-${col - 1}`) &&
-      !this.state.secondRightClick.includes(`${row - 1}-${col - 1}`)
-    )
+      col - 1 <= this.props.columns
+    ) {
       newClicked.push(`${row - 1}-${col - 1}`);
+      if (this.state.rightClick.includes(`${row - 1}-${col - 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row - 1}-${col - 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row - 1}-${col - 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row - 1}-${col - 1}`),
+          1
+        );
+      }
+    }
     if (
       !newClicked.includes(`${row - 1}-${col}`) &&
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col > 0 &&
-      col <= this.props.columns &&
-      !this.state.rightClick.includes(`${row - 1}-${col}`) &&
-      !this.state.secondRightClick.includes(`${row - 1}-${col}`)
-    )
+      col <= this.props.columns
+    ) {
       newClicked.push(`${row - 1}-${col}`);
+      if (this.state.rightClick.includes(`${row - 1}-${col}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row - 1}-${col}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row - 1}-${col}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row - 1}-${col}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row - 1}-${col + 1}`) &&
       row - 1 > 0 &&
       row - 1 <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row - 1}-${col + 1}`) &&
-      !this.state.secondRightClick.includes(`${row - 1}-${col + 1}`)
-    )
+      col + 1 <= this.props.columns
+    ) {
       newClicked.push(`${row - 1}-${col + 1}`);
+      if (this.state.rightClick.includes(`${row - 1}-${col + 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row - 1}-${col + 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row - 1}-${col + 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row - 1}-${col + 1}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row}-${col - 1}`) &&
       row > 0 &&
       row <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row}-${col - 1}`) &&
-      !this.state.secondRightClick.includes(`${row}-${col - 1}`)
-    )
+      col - 1 <= this.props.columns
+    ) {
       newClicked.push(`${row}-${col - 1}`);
+      if (this.state.rightClick.includes(`${row}-${col - 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row}-${col - 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row}-${col - 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row}-${col - 1}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row}-${col + 1}`) &&
       row > 0 &&
       row <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row}-${col + 1}`) &&
-      !this.state.secondRightClick.includes(`${row}-${col + 1}`)
-    )
+      col + 1 <= this.props.columns
+    ) {
       newClicked.push(`${row}-${col + 1}`);
+      if (this.state.rightClick.includes(`${row}-${col + 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row}-${col + 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row}-${col + 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row}-${col + 1}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row + 1}-${col - 1}`) &&
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col - 1 > 0 &&
-      col - 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row + 1}-${col - 1}`) &&
-      !this.state.secondRightClick.includes(`${row + 1}-${col - 1}`)
-    )
+      col - 1 <= this.props.columns
+    ) {
       newClicked.push(`${row + 1}-${col - 1}`);
+      if (this.state.rightClick.includes(`${row + 1}-${col - 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row + 1}-${col - 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row + 1}-${col - 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row + 1}-${col - 1}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row + 1}-${col}`) &&
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col > 0 &&
-      col <= this.props.columns &&
-      !this.state.rightClick.includes(`${row + 1}-${col}`) &&
-      !this.state.secondRightClick.includes(`${row + 1}-${col}`)
-    )
+      col <= this.props.columns
+    ) {
       newClicked.push(`${row + 1}-${col}`);
+      if (this.state.rightClick.includes(`${row + 1}-${col}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row + 1}-${col}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row + 1}-${col}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row + 1}-${col}`),
+          1
+        );
+      }
+    }
+
     if (
       !newClicked.includes(`${row + 1}-${col + 1}`) &&
       row + 1 > 0 &&
       row + 1 <= this.props.rows &&
       col + 1 > 0 &&
-      col + 1 <= this.props.columns &&
-      !this.state.rightClick.includes(`${row + 1}-${col + 1}`) &&
-      !this.state.secondRightClick.includes(`${row + 1}-${col + 1}`)
-    )
+      col + 1 <= this.props.columns
+    ) {
       newClicked.push(`${row + 1}-${col + 1}`);
+      if (this.state.rightClick.includes(`${row + 1}-${col + 1}`)) {
+        this.state.rightClick.splice(
+          this.state.rightClick.indexOf(`${row + 1}-${col + 1}`),
+          1
+        );
+      }
+      if (this.state.secondRightClick.includes(`${row + 1}-${col + 1}`)) {
+        this.state.secondRightClick.splice(
+          this.state.secondRightClick.indexOf(`${row + 1}-${col + 1}`),
+          1
+        );
+      }
+    }
+    // I can't think of a way in which clicked tiles length will decrease.
     if (this.state.clicked.length !== newClicked.length) {
       this.setState(() => {
         return {
@@ -410,7 +513,6 @@ class Minesweeper extends Component {
             {this.state.lose ? "You Lose" : ""}
             {this.state.win ? "Win" : ""}
           </Label>
-
           <Button onClick={this.handleRetry}>Retry</Button>
           <Dropdown
             placeholder="Difficulty"
@@ -430,6 +532,7 @@ class Minesweeper extends Component {
                 row={tile[0]}
                 column={tile[1]}
                 index={index}
+                // To change background when clicked.
                 basic={this.state.clicked.includes(tile.join("-"))}
                 onClick={this.handleTileClick}
                 onContextMenu={this.handleRightClick}
@@ -444,27 +547,20 @@ class Minesweeper extends Component {
                   : ""}
                 {/* show bombs */}
                 {this.state.bombs.includes(tile.join("-")) &&
-                this.state.clicked.includes(tile.join("-")) ? (
-                  <Icon color="red" name="bomb" />
-                ) : (
-                  ""
-                )}
+                this.state.clicked.includes(tile.join("-"))
+                  ? "💣"
+                  : ""}
                 {/* show flag */}
-                {this.state.rightClick.includes(tile.join("-")) ? (
-                  <Icon color="red" name="flag" />
-                ) : (
-                  ""
-                )}
+                {this.state.rightClick.includes(tile.join("-")) ? "🚩" : ""}
                 {/* show qmark */}
-                {this.state.secondRightClick.includes(tile.join("-")) ? (
-                  <Icon name="question" />
-                ) : (
-                  ""
-                )}
+                {this.state.secondRightClick.includes(tile.join("-"))
+                  ? "❓"
+                  : ""}
               </Button>
             );
           })}
         </div>
+        <Label>Long press / Right click to flag.</Label>
       </div>
     );
   };
